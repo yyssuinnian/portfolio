@@ -3,603 +3,1638 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古代商人养成记</title>
+    <title>盛世商途 · 百年富商</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", "Songti SC", serif;
         }
         body {
-            font-family: "Microsoft YaHei", sans-serif;
-            background: #f5f0e6;
-            color: #333;
-            padding: 20px;
+            background: 
+                radial-gradient(circle at 20% 10%, rgba(212,167,98,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 90%, rgba(139,90,43,0.08) 0%, transparent 50%),
+                linear-gradient(135deg, #f7f1e3 0%, #e8dcc0 100%);
+            color: #2c2416;
+            min-height: 100vh;
+            padding: 25px 15px;
         }
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* 开始界面 */
-        .start-screen {
-            text-align: center;
-            padding: 80px 20px;
-        }
-        .start-screen h1 {
-            font-size: 42px;
-            color: #8b5a2b;
-            margin-bottom: 20px;
-        }
-        .start-screen p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 40px;
-        }
-        .difficulty-box {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .diff-card {
-            width: 200px;
-            padding: 30px 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .diff-card:hover {
-            transform: translateY(-5px);
-            border-color: #d4a762;
-        }
-        .diff-card h3 {
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: #8b5a2b;
-        }
-        .diff-card p {
-            font-size: 14px;
-            color: #888;
-            margin: 5px 0;
-        }
-
-        /* 游戏主界面 */
-        .game-screen {
-            display: none;
-        }
-        .status-bar {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+        /* 顶部标题栏 */
+        .header {
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .header::before, .header::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 18%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d4a762);
+        }
+        .header::after {
+            right: 0;
+            background: linear-gradient(to left, transparent, #d4a762);
+        }
+        .header h1 {
+            font-size: 32px;
+            background: linear-gradient(135deg, #8b5a2b, #d4a762);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 8px;
+            font-weight: 600;
+            text-shadow: 0 2px 8px rgba(139,90,43,0.15);
+        }
+        .header-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .header-btn {
+            padding: 9px 18px;
+            background: linear-gradient(135deg, #d4a762, #b8874a);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(184,135,74,0.35);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1px;
+        }
+        .header-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(184,135,74,0.45);
+        }
+        .header-btn.guide {
+            background: linear-gradient(135deg, #6b8ab8, #4a6fa5);
+            box-shadow: 0 4px 15px rgba(74,111,165,0.35);
+        }
+        .header-btn.guide:hover {
+            box-shadow: 0 7px 20px rgba(74,111,165,0.45);
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            background: linear-gradient(180deg, #ffffff 0%, #faf6ed 100%);
+            border-radius: 16px;
+            padding: 22px 30px;
+            box-shadow: 
+                0 8px 30px rgba(0,0,0,0.06),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(212,167,98,0.2);
         }
         .status-item {
             text-align: center;
-            flex: 1;
-            min-width: 100px;
+            position: relative;
         }
-        .status-item .label {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 5px;
+        .status-item:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, #e8dcc0, transparent);
         }
-        .status-item .value {
-            font-size: 22px;
-            font-weight: bold;
-            color: #8b5a2b;
+        .status-label {
+            font-size: 13px;
+            color: #998670;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .status-value {
+            font-size: 26px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #8b5a2b, #d4a762);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .event-bar {
-            background: #fff8e7;
-            border-left: 4px solid #e6a23c;
-            padding: 12px 18px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-weight: 500;
+        /* 新闻面板 */
+        .news-panel {
+            background: linear-gradient(180deg, #fffbf2 0%, #fff8e7 100%);
+            border: 1px solid #f0e2c7;
+            border-radius: 12px;
+            padding: 18px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(146,96,31,0.05);
+        }
+        .news-title {
+            font-size: 15px;
+            font-weight: 600;
             color: #92601f;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 1px;
+        }
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .news-item {
+            font-size: 13px;
+            color: #7a6240;
+            padding-left: 14px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .news-item::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #d4a762;
         }
 
+        /* 分区标题 */
+        .section-title {
+            font-size: 19px;
+            color: #8b5a2b;
+            margin: 25px 0 15px;
+            padding-left: 12px;
+            border-left: 5px solid #d4a762;
+            font-weight: 600;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title.rare {
+            border-left-color: #9b59b6;
+            color: #6c3483;
+        }
+
+        /* 商品网格 */
         .goods-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
             margin-bottom: 20px;
         }
         .goods-card {
-            background: white;
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: linear-gradient(180deg, #ffffff 0%, #fdfbf7 100%);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 
+                0 6px 20px rgba(0,0,0,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.9);
+            border-top: 3px solid #d4a762;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        .goods-card h4 {
+        .goods-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #d4a762, #f0d8a8);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .goods-card.rare {
+            border-top-color: #9b59b6;
+            background: linear-gradient(180deg, #fdfbff 0%, #f8f4fc 100%);
+        }
+        .goods-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 12px 35px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255,255,255,1);
+        }
+        .goods-card:hover::before {
+            opacity: 1;
+        }
+        .goods-name {
             font-size: 18px;
-            margin-bottom: 10px;
-            color: #555;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #5c4325;
+            letter-spacing: 1px;
+        }
+        .goods-card.rare .goods-name {
+            color: #6c3483;
         }
         .price-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .price {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 700;
+            color: #8b5a2b;
+            letter-spacing: -1px;
         }
-        .price-up {
-            color: #e74c3c;
+        .goods-card.rare .price {
+            color: #8e44ad;
         }
-        .price-down {
-            color: #27ae60;
+        .trend {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 500;
         }
-        .price-flat {
-            color: #999;
+        .trend-up {
+            color: #c0392b;
+            background: #fadbd8;
         }
-        .hold-num {
-            font-size: 14px;
-            color: #888;
+        .trend-down {
+            color: #1e8449;
+            background: #d5f5e3;
+        }
+        .trend-flat {
+            color: #7f8c8d;
+            background: #f2f3f4;
+        }
+        .info-row {
+            font-size: 12px;
+            color: #887766;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .fee-tip {
+            font-size: 11px;
+            color: #b9770e;
+            background: #fef5e7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .risk-tip {
+            font-size: 11px;
+            color: #c0392b;
+            background: #fdf0ef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .expire-warning {
+            color: #c0392b;
+            font-weight: 600;
         }
         .btn-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+            row-gap: 6px;
         }
         .btn {
-            flex: 1;
             padding: 8px 0;
             border: none;
-            border-radius: 6px;
+            border-radius: 7px;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s;
+            font-size: 12px;
+            transition: all 0.2s;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
         .btn-buy {
-            background: #4a90e2;
+            background: linear-gradient(135deg, #5dade2, #3498db);
             color: white;
+            box-shadow: 0 2px 6px rgba(52,152,219,0.25);
         }
         .btn-buy:hover {
-            background: #357abd;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(52,152,219,0.35);
         }
         .btn-sell {
-            background: #e67e22;
+            background: linear-gradient(135deg, #f5b041, #e67e22);
             color: white;
+            box-shadow: 0 2px 6px rgba(230,126,34,0.25);
         }
         .btn-sell:hover {
-            background: #d35400;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(230,126,34,0.35);
+        }
+        .btn-info {
+            grid-column: span 3;
+            background: linear-gradient(135deg, #af7ac5, #9b59b6);
+            color: white;
+            margin-top: 4px;
+            box-shadow: 0 2px 6px rgba(155,89,182,0.25);
+        }
+        .btn-info:hover {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(155,89,182,0.35);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
-        .control-bar {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 10px;
+        /* 大宗交易区 */
+        .bulk-panel {
+            background: linear-gradient(180deg, #ffffff 0%, #faf6ed 100%);
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid rgba(212,167,98,0.15);
         }
-        .btn-big {
-            padding: 12px 30px;
+        .bulk-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .bulk-item {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 16px;
+            background: white;
+            transition: all 0.25s;
+        }
+        .bulk-item:hover {
+            border-color: #d4a762;
+            box-shadow: 0 4px 12px rgba(212,167,98,0.15);
+            transform: translateY(-2px);
+        }
+        .bulk-item h4 {
+            color: #5c4325;
+            margin-bottom: 8px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .bulk-desc {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            min-height: 36px;
+        }
+
+        /* 底部操作栏 */
+        .action-bar {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: linear-gradient(180deg, #ffffff 0%, #faf6ed 100%);
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,167,98,0.15);
+        }
+        .btn-large {
+            padding: 13px 32px;
+            font-size: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        .btn-next {
+            background: linear-gradient(135deg, #8b5a2b, #b8874a);
+            color: white;
+            box-shadow: 0 5px 15px rgba(139,90,43,0.3);
+        }
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(139,90,43,0.4);
+        }
+        .btn-house {
+            background: linear-gradient(135deg, #27ae60, #1e8449);
+            color: white;
+            box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+        }
+        .btn-house:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(39,174,96,0.4);
+        }
+        .btn-storage {
+            background: linear-gradient(135deg, #f39c12, #d68910);
+            color: white;
+            box-shadow: 0 5px 15px rgba(243,156,18,0.3);
+        }
+        .btn-storage:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(243,156,18,0.4);
+        }
+
+        /* NPC弹窗样式 */
+        .npc-card {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+        }
+        .npc-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4a762, #8b5a2b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(139,90,43,0.25);
+        }
+        .npc-info h4 {
+            color: #8b5a2b;
+            margin-bottom: 6px;
+            font-size: 18px;
+        }
+        .npc-trait {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        .npc-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .favor-bar {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f5f0;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        .favor-level {
+            color: #d4a762;
+            font-weight: 600;
+        }
+        .price-discount {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        /* 弹窗通用样式 */
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal {
+            background: linear-gradient(180deg, #ffffff 0%, #faf8f3 100%);
+            border-radius: 16px;
+            padding: 32px;
+            min-width: 420px;
+            max-width: 580px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            border: 1px solid rgba(212,167,98,0.2);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal h3 {
+            font-size: 21px;
+            margin-bottom: 18px;
+            color: #8b5a2b;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .modal h4 {
             font-size: 16px;
+            color: #8b5a2b;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        .modal p {
+            margin: 8px 0;
+            line-height: 1.7;
+            color: #555;
+            font-size: 14px;
+        }
+        .modal-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        .modal-btn {
+            padding: 9px 22px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 14px;
             transition: all 0.2s;
         }
-        .btn-next {
-            background: #8b5a2b;
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #8b5a2b, #b8874a);
             color: white;
         }
-        .btn-next:hover {
-            background: #6d4420;
+        .modal-btn-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(139,90,43,0.3);
         }
-        .btn-reset {
-            background: #95a5a6;
-            color: white;
+        .modal-btn-cancel {
+            background: #e8e8e8;
+            color: #555;
         }
-        .btn-reset:hover {
-            background: #7f8c8d;
+        .modal-btn-cancel:hover {
+            background: #ddd;
+        }
+        .house-item {
+            padding: 14px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .house-item:hover {
+            border-color: #d4a762;
+            background: #fdfaf3;
+        }
+        .house-item.owned {
+            background: #eafaf1;
+            border-color: #27ae60;
+        }
+        .house-item.top {
+            border-color: #9b59b6;
+            background: #faf6fd;
         }
     </style>
 </head>
 <body>
 <div class="container">
 
-    <!-- 开始界面：难度选择 -->
-    <div class="start-screen" id="startScreen">
-        <h1>🏮 古代商人养成记</h1>
-        <p>低买高卖，囤积居奇，攒够钱买房置地，成为一代富商</p>
-        <div class="difficulty-box">
-            <div class="diff-card" onclick="startGame('easy')">
-                <h3>简单模式</h3>
-                <p>初始资金：1500文</p>
-                <p>通关目标：3000文</p>
-                <p>仓库容量：25件</p>
-                <p>风波较少，适合新手</p>
+    <!-- 顶部标题 -->
+    <div class="header">
+        <h1>🏮 盛世商途</h1>
+        <div class="header-btns">
+            <button class="header-btn guide" onclick="showGuide()">📖 玩法介绍</button>
+            <button class="header-btn" id="adBtn" onclick="watchAd()">📺 看广告领银两</button>
+        </div>
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-label">时限轮次</div>
+            <div class="status-value"><span id="round">1</span> / 100</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">持有银两</div>
+            <div class="status-value" id="money">1000</div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">仓库容量</div>
+            <div class="status-value"><span id="storageUsed">0</span>/<span id="storageMax">15</span></div>
+        </div>
+        <div class="status-item">
+            <div class="status-label">当前宅邸</div>
+            <div class="status-value" id="house" style="font-size:18px;">茅草屋</div>
+        </div>
+    </div>
+
+    <!-- 新闻面板 -->
+    <div class="news-panel">
+        <div class="news-title">📰 街市传闻</div>
+        <div class="news-list" id="newsList">
+            <div class="news-item">开市大吉，暂无最新消息</div>
+        </div>
+    </div>
+
+    <!-- 普通商品区 -->
+    <div class="section-title">📦 寻常货物</div>
+    <div class="goods-grid" id="goodsGrid"></div>
+
+    <!-- 贵重商品区 -->
+    <div class="section-title rare">💎 贵重珍奇 · 管制物品</div>
+    <div class="goods-grid" id="rareGrid"></div>
+
+    <!-- 大宗交易区 -->
+    <div class="section-title">🚛 限时大宗</div>
+    <div class="bulk-panel">
+        <div class="bulk-grid">
+            <div class="bulk-item">
+                <h4>📥 限时采购</h4>
+                <div class="bulk-desc" id="bulkBuyDesc">暂无采购机会，下轮再来看看吧</div>
+                <button class="btn btn-buy" style="width:100%;" id="bulkBuyBtn" disabled onclick="doBulkBuy()">立即采购</button>
             </div>
-            <div class="diff-card" onclick="startGame('normal')">
-                <h3>普通模式</h3>
-                <p>初始资金：1000文</p>
-                <p>通关目标：3000文</p>
-                <p>仓库容量：15件</p>
-                <p>正常难度，经典体验</p>
-            </div>
-            <div class="diff-card" onclick="startGame('hard')">
-                <h3>困难模式</h3>
-                <p>初始资金：800文</p>
-                <p>通关目标：5000文</p>
-                <p>仓库容量：10件</p>
-                <p>风波不断，考验眼光</p>
+            <div class="bulk-item">
+                <h4>📤 限时出货</h4>
+                <div class="bulk-desc" id="bulkSellDesc">暂无出货机会，下轮再来看看吧</div>
+                <button class="btn btn-sell" style="width:100%;" id="bulkSellBtn" disabled onclick="doBulkSell()">立即出货</button>
             </div>
         </div>
     </div>
 
-    <!-- 游戏主界面 -->
-    <div class="game-screen" id="gameScreen">
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="label">当前轮次</div>
-                <div class="value" id="round">1</div>
-            </div>
-            <div class="status-item">
-                <div class="label">持有现金</div>
-                <div class="value" id="money">1000</div>
-            </div>
-            <div class="status-item">
-                <div class="label">仓库占用</div>
-                <div class="value"><span id="storageUsed">0</span>/<span id="storageMax">15</span></div>
-            </div>
-            <div class="status-item">
-                <div class="label">通关目标</div>
-                <div class="value" id="target">3000</div>
-            </div>
-        </div>
-
-        <div class="event-bar" id="eventTip">
-            开市大吉，暂无特殊事件
-        </div>
-
-        <div class="goods-grid" id="goodsGrid">
-            <!-- 商品卡片由JS动态生成 -->
-        </div>
-
-        <div class="control-bar">
-            <button class="btn-big btn-next" onclick="nextRound()">进入下一轮</button>
-            <button class="btn-big btn-reset" onclick="backToMenu()">返回主菜单</button>
-        </div>
+    <!-- 底部操作栏 -->
+    <div class="action-bar">
+        <button class="btn-large btn-next" onclick="nextRound()">⏳ 进入下一轮</button>
+        <button class="btn-large btn-house" onclick="showHouseModal()">🏠 购买宅邸</button>
+        <button class="btn-large btn-storage" onclick="upgradeStorage()">📦 扩建仓库</button>
     </div>
 
 </div>
 
-<script>
-    // ========== 游戏配置 ==========
-    const difficultyConfig = {
-        easy: {
-            money: 1500,
-            target: 3000,
-            maxStorage: 25,
-            badEventRate: 0.2, // 负面事件概率
-            priceWave: 0.8 // 价格波动系数
-        },
-        normal: {
-            money: 1000,
-            target: 3000,
-            maxStorage: 15,
-            badEventRate: 0.4,
-            priceWave: 1
-        },
-        hard: {
-            money: 800,
-            target: 5000,
-            maxStorage: 10,
-            badEventRate: 0.6,
-            priceWave: 1.3
-        }
-    };
+<!-- 通用弹窗 -->
+<div class="modal-mask" id="modalMask">
+    <div class="modal">
+        <h3 id="modalTitle">提示</h3>
+        <div id="modalContent"></div>
+        <div class="modal-btns" id="modalBtns"></div>
+    </div>
+</div>
 
-    // 商品列表
-    const goodsList = [
-        { id: 'food', name: '🌾 粮食', basePrice: 100, min: 50, max: 200 },
-        { id: 'wood', name: '🪵 木材', basePrice: 80, min: 40, max: 160 },
-        { id: 'cloth', name: '🧵 布匹', basePrice: 120, min: 60, max: 240 },
-        { id: 'salt', name: '🧂 食盐', basePrice: 90, min: 50, max: 180 },
-        { id: 'spice', name: '🌶️ 香料', basePrice: 200, min: 100, max: 350 }
+<script>
+    // ===================== 游戏配置 =====================
+    const MAX_ROUND = 100;
+
+    // 商品配置
+    const goodsConfig = [
+        { 
+            id: 'food', name: '🌾 粮食', basePrice: 100, min: 50, max: 200, 
+            expire: 3, noFee: true, feeRate: 0, rare: false, contraband: false,
+            npc: {
+                name: '张老财',
+                avatar: '👨‍🌾',
+                trait: '【性格】精明吝啬，在商言商',
+                desc: '粮行掌柜，做了一辈子粮食生意，对市场行情了如指掌。就是为人小气，要价不低。',
+                baseCost: 120
+            }
+        },
+        { 
+            id: 'wood', name: '🪵 木材', basePrice: 80, min: 40, max: 160, 
+            expire: 5, noFee: true, feeRate: 0, rare: false, contraband: false,
+            npc: {
+                name: '李把头',
+                avatar: '🪓',
+                trait: '【性格】豪爽直白，爱吹牛皮',
+                desc: '伐木场把头，认识不少山民和工匠。人很痛快，消息时准时不准。',
+                baseCost: 80
+            }
+        },
+        { 
+            id: 'cloth', name: '🧵 布匹', basePrice: 120, min: 60, max: 240, 
+            expire: 8, noFee: false, feeRate: 0.1, rare: false, contraband: false,
+            npc: {
+                name: '苏绣娘',
+                avatar: '👩',
+                trait: '【性格】心细如发，人脉极广',
+                desc: '织造坊主母，常年往来于江南与京城。消息灵通，就是要价不菲。',
+                baseCost: 200
+            }
+        },
+        { 
+            id: 'salt', name: '🧂 食盐', basePrice: 90, min: 50, max: 180, 
+            expire: 999, noFee: false, feeRate: 0.1, rare: false, contraband: false,
+            npc: {
+                name: '盐司吏',
+                avatar: '👨‍💼',
+                trait: '【性格】油滑世故，真真假假',
+                desc: '盐运司的小吏，知道不少内部消息。但此人滑头，话里七分真三分假。',
+                baseCost: 150
+            }
+        },
+        { 
+            id: 'spice', name: '🌶️ 香料', basePrice: 200, min: 100, max: 350, 
+            expire: 6, noFee: false, feeRate: 0.1, rare: false, contraband: false,
+            npc: {
+                name: '胡商阿里',
+                avatar: '🧔',
+                trait: '【性格】神秘莫测，眼光毒辣',
+                desc: '来自西域的胡商，走南闯北见多识广。他的消息往往价值千金。',
+                baseCost: 300
+            }
+        },
+        // 贵重管制商品
+        { 
+            id: 'horse', name: '🐎 战马', basePrice: 800, min: 500, max: 1500, 
+            expire: 10, noFee: false, feeRate: 0.1, rare: true, contraband: true,
+            npc: {
+                name: '王马倌',
+                avatar: '🐴',
+                trait: '【性格】圆滑贪财，路子很野',
+                desc: '军马营退下来的马倌，私下里倒卖战马。手眼通天，就是贪得无厌。',
+                baseCost: 250
+            }
+        },
+        { 
+            id: 'sword', name: '⚔️ 宝剑', basePrice: 1200, min: 700, max: 2500, 
+            expire: 999, noFee: false, feeRate: 0.1, rare: true, contraband: true,
+            npc: {
+                name: '欧师傅',
+                avatar: '🗡️',
+                trait: '【性格】寡言少语，分量十足',
+                desc: '铸剑世家后人，暗中打造兵器售卖。话不多，但说出来的消息都很有分量。',
+                baseCost: 400
+            }
+        }
     ];
 
-    // ========== 游戏状态 ==========
-    let gameData = {};
-    let currentDiff = 'normal';
-    let lastPrices = {}; // 记录上一轮价格，用来算涨跌
+    // 房产配置
+    const houseList = [
+        { id: 'hut', name: '茅草屋', price: 500, desc: '遮风避雨，勉强安家' },
+        { id: 'tile', name: '青瓦房', price: 1500, desc: '青砖灰瓦，小康之家' },
+        { id: 'courtyard', name: '四合院', price: 3500, desc: '四合院落，殷实人家' },
+        { id: 'mansion', name: '大宅院', price: 6000, desc: '三进三出，地方名流' },
+        { id: 'garden', name: '园林宅邸', price: 10000, desc: '亭台楼阁，富甲一方' },
+        { id: 'palace', name: '王府大院', price: 20000, desc: '朱门大户，一代巨富' },
+        { id: 'houfu', name: '郡侯府', price: 35000, desc: '侯门似海，位尊财厚', top: true },
+        { id: 'guogong', name: '国公府', price: 60000, desc: '国公门第，权倾一方', top: true },
+        { id: 'zhenguo', name: '镇国王府', price: 100000, desc: '裂土封王，人间绝顶', top: true }
+    ];
 
-    // ========== 开始游戏 ==========
-    function startGame(diff) {
-        currentDiff = diff;
-        const config = difficultyConfig[diff];
-        
-        // 初始化数据
-        gameData = {
-            round: 1,
-            money: config.money,
-            target: config.target,
-            maxStorage: config.maxStorage,
-            goods: {}
-        };
+    // 新闻库
+    const newsPool = [
+        { text: '边关战事吃紧，军需木材大涨', target: 'wood', isGood: true },
+        { text: '今年风调雨顺，粮食丰收在即', target: 'food', isGood: false },
+        { text: '江南织造局停工，布匹供应紧张', target: 'cloth', isGood: true },
+        { text: '海盐产区暴雨，盐运受阻', target: 'salt', isGood: true },
+        { text: '西域商队入关，香料大量到货', target: 'spice', isGood: false },
+        { text: '皇宫选秀在即，布匹需求激增', target: 'cloth', isGood: true },
+        { text: '蝗灾过境，粮食减产严重', target: 'food', isGood: true },
+        { text: '新开盐井投产，食盐价格走低', target: 'salt', isGood: false },
+        { text: '海外贸易繁荣，香料供不应求', target: 'spice', isGood: true },
+        { text: '民间大兴土木，木材价格攀升', target: 'wood', isGood: true },
+        { text: '漕运开通，粮食运输成本大降', target: 'food', isGood: false },
+        { text: '胡商大量抛售香料，价格跳水', target: 'spice', isGood: false },
+        { text: '朝廷整军备战，战马价格疯涨', target: 'horse', isGood: true },
+        { text: '边境互市开放，战马流入增多', target: 'horse', isGood: false },
+        { text: '江湖剑客四起，宝剑供不应求', target: 'sword', isGood: true },
+        { text: '朝廷收缴兵器，宝剑价格大跌', target: 'sword', isGood: false }
+    ];
 
-        // 初始化每种商品的持有量和价格
-        goodsList.forEach(goods => {
-            gameData.goods[goods.id] = {
-                hold: 0,
-                price: goods.basePrice
-            };
-            lastPrices[goods.id] = goods.basePrice;
-        });
+    // 官僚事件
+    const officialEvents = [
+        {
+            title: '税监大人巡查',
+            desc: '地方税监路过你的商铺，有意刁难。你打算如何应对？',
+            options: [
+                { text: '送上200两讨好', cost: 200, successRate: 0.7, successReward: '免税一轮，卖出无手续费', failReward: '白花钱，什么都没得到' },
+                { text: '刚正不阿，不予理会', cost: 0, successRate: 0.6, successReward: '对方无趣离开，相安无事', failReward: '被恶意刁难，扣罚100两' }
+            ]
+        },
+        {
+            title: '知府大人办寿宴',
+            desc: '知府大人寿辰，各界商户都要随礼。你去不去？',
+            options: [
+                { text: '随礼300两', cost: 300, successRate: 0.75, successReward: '知府赏识，赏赐一批紧俏货物', failReward: '礼物石沉大海，毫无回音' },
+                { text: '不凑这个热闹', cost: 0, successRate: 0.5, successReward: '没人在意，平安无事', failReward: '被穿小鞋，仓库货物损耗两成' }
+            ]
+        }
+    ];
 
-        // 切换界面
-        document.getElementById('startScreen').style.display = 'none';
-        document.getElementById('gameScreen').style.display = 'block';
+    // 好感度等级配置
+    const favorLevels = [
+        { min: 0, name: '陌生', discount: 1 },
+        { min: 20, name: '熟识', discount: 0.9 },
+        { min: 50, name: '信任', discount: 0.8 },
+        { min: 100, name: '莫逆', discount: 0.7 },
+        { min: 200, name: '至交', discount: 0.5 }
+    ];
 
-        // 生成商品卡片
-        renderGoodsCards();
-        // 刷新页面
-        refreshPage();
+    // 大宗交易候选池
+    const bulkBuyPool = [
+        { id: 'food', num: 10, discount: 0.93, desc: '购入10件粮食，享93折优惠，免手续费' },
+        { id: 'food', num: 25, discount: 0.88, desc: '购入25件粮食，享88折优惠，免手续费' },
+        { id: 'wood', num: 12, discount: 0.85, desc: '购入12件木材，享85折优惠，免手续费' },
+        { id: 'wood', num: 20, discount: 0.82, desc: '购入20件木材，享82折优惠，免手续费' },
+        { id: 'cloth', num: 8, discount: 0.85, desc: '购入8件布匹，享85折优惠' },
+        { id: 'cloth', num: 15, discount: 0.8, desc: '购入15件布匹，享8折优惠' },
+        { id: 'salt', num: 15, discount: 0.9, desc: '购入15件食盐，享9折优惠' },
+        { id: 'salt', num: 30, discount: 0.85, desc: '购入30件食盐，享85折优惠' },
+        { id: 'spice', num: 5, discount: 0.8, desc: '购入5件香料，享8折优惠' },
+        { id: 'spice', num: 10, discount: 0.75, desc: '购入10件香料，享75折优惠' },
+        { id: 'horse', num: 2, discount: 0.88, desc: '购入2匹战马，享88折优惠，风险较高' },
+        { id: 'sword', num: 2, discount: 0.85, desc: '购入2把宝剑，享85折优惠，风险较高' },
+        { id: 'sword', num: 3, discount: 0.8, desc: '购入3把宝剑，享8折优惠，风险极高' }
+    ];
+
+    const bulkSellPool = [
+        { id: 'spice', type: 'fee', value: 0.03, desc: '全部香料仅收3%手续费，高价出货良机' },
+        { id: 'cloth', type: 'fee', value: 0.04, desc: '全部布匹仅收4%手续费，适合清仓' },
+        { id: 'salt', type: 'fee', value: 0.05, desc: '全部食盐仅收5%手续费' },
+        { id: 'horse', type: 'fee', value: 0.02, desc: '全部战马仅收2%手续费，安全走货' },
+        { id: 'sword', type: 'discount', value: 0.95, desc: '全部宝剑95折包收，无手续费，快速脱手' },
+        { id: 'sword', type: 'fee', value: 0.03, desc: '全部宝剑仅收3%手续费，稳妥出货' },
+        { id: 'food', type: 'bonus', value: 0.1, desc: '粮食收购价上浮10%，免手续费' },
+        { id: 'wood', type: 'bonus', value: 0.12, desc: '木材大量收购，价格上浮12%，免手续费' },
+        { id: 'cloth', type: 'bonus', value: 0.08, desc: '布匹行情向好，收购价上浮8%' },
+        { id: 'spice', type: 'bonus', value: 0.15, desc: '香料紧缺，收购价上浮15%' }
+    ];
+
+    // ===================== 游戏状态 =====================
+    let game = {
+        round: 1,
+        money: 1000,
+        maxStorage: 15,
+        house: 'hut',
+        goods: {},
+        lastPrices: {},
+        npcFavor: {},
+        adClicked: false,
+        freeTax: false,
+        gameOver: false
+    };
+
+    // 当前大宗机会
+    let currentBulk = {
+        buy: null,
+        sell: null
+    };
+
+    // 初始化商品数据
+    goodsConfig.forEach(g => {
+        game.goods[g.id] = { hold: 0, price: g.basePrice, expireLeft: g.expire };
+        game.lastPrices[g.id] = g.basePrice;
+        game.npcFavor[g.id] = 0;
+    });
+
+    // ===================== 玩法介绍 =====================
+    function showGuide() {
+        const content = `
+            <h4>🎯 游戏目标</h4>
+            <p>你有100轮的时间，从一介布衣开始经商，通过低买高卖积累财富，购买更高等级的宅邸，最终目标是买下「镇国王府」，成为一代巨富。</p>
+            <p>百年期满时，也会根据你的总身家给出评价。</p>
+            
+            <h4>📦 基础玩法</h4>
+            <p>• 每种商品价格每轮都会波动，低价买入、高价卖出即可赚取差价。</p>
+            <p>• 粮食、木材卖出免手续费；布匹、食盐、香料、战马、宝剑卖出收取手续费。</p>
+            <p>• 部分商品有保质期，存放过久会变质报废，页面会显示剩余轮数。</p>
+            
+            <h4>💎 贵重管制物品</h4>
+            <p>• 战马、宝剑属于贵重管制物品，利润更高，但持有越多，越容易被朝廷查抄没收。</p>
+            <p>• 遇到合适的出货机会可以快速脱手，降低风险。</p>
+            
+            <h4>💬 商人打听系统</h4>
+            <p>• 每种商品对应一位商人，可以花钱打听下一轮价格走势。</p>
+            <p>• 交易越多，和商人交情越深，打听费用越便宜，交情够了偶尔还会免费相告。</p>
+            <p>• 消息有准有偏，仅供参考，风险自担。</p>
+            
+            <h4>🚛 限时大宗</h4>
+            <p>• 每轮可能随机出现「限时采购」或「限时出货」机会，折扣比平时更划算。</p>
+            <p>• 机会每轮刷新，错过就没了，遇到合适的不要错过。</p>
+            
+            <h4>📰 其他机制</h4>
+            <p>• 街市传闻：每轮更新3条新闻，大概率影响对应商品价格，也可能不准。</p>
+            <p>• 官僚事件：有概率遇到官府人员，选择不同应对方式有不同结果。</p>
+            <p>• 仓库扩容：花钱可以增加仓库容量，囤更多货。</p>
+            <p>• 购买宅邸：越高级的宅邸，越是身份和财富的象征。</p>
+        `;
+        showModal('玩法介绍', content);
     }
 
-    // ========== 生成商品卡片 ==========
+    // ===================== 页面渲染 =====================
     function renderGoodsCards() {
-        const grid = document.getElementById('goodsGrid');
-        grid.innerHTML = '';
-        
-        goodsList.forEach(goods => {
+        const normalGrid = document.getElementById('goodsGrid');
+        const rareGrid = document.getElementById('rareGrid');
+        normalGrid.innerHTML = '';
+        rareGrid.innerHTML = '';
+
+        goodsConfig.forEach(goods => {
+            const feeText = goods.noFee ? '免手续费' : `手续费${goods.feeRate*100}%`;
+            const riskText = goods.contraband ? '⚠️ 管制物品' : '';
+            
             const card = document.createElement('div');
-            card.className = 'goods-card';
+            card.className = `goods-card ${goods.rare ? 'rare' : ''}`;
             card.innerHTML = `
-                <h4>${goods.name}</h4>
+                <div class="goods-name">${goods.name}</div>
                 <div class="price-row">
                     <span class="price" id="price_${goods.id}">${goods.basePrice}</span>
-                    <span class="price-flat" id="trend_${goods.id}">—</span>
+                    <span class="trend trend-flat" id="trend_${goods.id}">— 持平</span>
                 </div>
-                <div class="hold-num">持有：<span id="hold_${goods.id}">0</span> 件</div>
+                <div class="info-row">
+                    <span>持有：<span id="hold_${goods.id}">0</span> 件</span>
+                    <span class="fee-tip">${feeText}</span>
+                </div>
+                <div class="info-row">
+                    <span id="expire_${goods.id}">永久保质</span>
+                    ${goods.contraband ? `<span class="risk-tip">${riskText}</span>` : ''}
+                </div>
                 <div class="btn-group">
-                    <button class="btn btn-buy" onclick="buyGoods('${goods.id}')">买入</button>
-                    <button class="btn btn-sell" onclick="sellGoods('${goods.id}')">卖出</button>
+                    <button class="btn btn-buy" onclick="buyGoods('${goods.id}', 1)">买1件</button>
+                    <button class="btn btn-buy" onclick="buyGoods('${goods.id}', 3)">买3件</button>
+                    <button class="btn btn-buy" onclick="buyGoods('${goods.id}', 10)">买10件</button>
+                    <button class="btn btn-sell" onclick="sellGoods('${goods.id}', 1)">卖1件</button>
+                    <button class="btn btn-sell" onclick="sellGoods('${goods.id}', 3)">卖3件</button>
+                    <button class="btn btn-sell" onclick="sellGoods('${goods.id}', 10)">卖10件</button>
                 </div>
+                <button class="btn btn-info" onclick="askNPC('${goods.id}')">
+                    💬 找${goods.npc.name}打听消息
+                </button>
             `;
-            grid.appendChild(card);
-        });
-    }
 
-    // ========== 刷新页面数据 ==========
-    function refreshPage() {
-        document.getElementById('round').innerText = gameData.round;
-        document.getElementById('money').innerText = gameData.money;
-        document.getElementById('target').innerText = gameData.target;
-        
-        // 计算仓库总占用
-        let totalHold = 0;
-        for (let id in gameData.goods) {
-            totalHold += gameData.goods[id].hold;
-        }
-        document.getElementById('storageUsed').innerText = totalHold;
-        document.getElementById('storageMax').innerText = gameData.maxStorage;
-
-        // 更新每个商品的价格和持有
-        goodsList.forEach(goods => {
-            const item = gameData.goods[goods.id];
-            document.getElementById(`price_${goods.id}`).innerText = item.price;
-            document.getElementById(`hold_${goods.id}`).innerText = item.hold;
-
-            // 价格涨跌趋势
-            const trendEl = document.getElementById(`trend_${goods.id}`);
-            if (item.price > lastPrices[goods.id]) {
-                trendEl.innerText = '↑ 涨';
-                trendEl.className = 'price-up';
-            } else if (item.price < lastPrices[goods.id]) {
-                trendEl.innerText = '↓ 跌';
-                trendEl.className = 'price-down';
+            if (goods.rare) {
+                rareGrid.appendChild(card);
             } else {
-                trendEl.innerText = '— 平';
-                trendEl.className = 'price-flat';
+                normalGrid.appendChild(card);
             }
         });
     }
 
-    // ========== 买入商品 ==========
-    function buyGoods(id) {
-        const goods = gameData.goods[id];
+    // 刷新所有数据
+    function refreshPage() {
+        document.getElementById('round').innerText = game.round;
+        document.getElementById('money').innerText = game.money;
+        document.getElementById('storageMax').innerText = game.maxStorage;
         
-        if (gameData.money < goods.price) {
-            alert('现金不足，买不起！');
-            return;
-        }
-
-        // 计算仓库总占用
         let totalHold = 0;
-        for (let gid in gameData.goods) {
-            totalHold += gameData.goods[gid].hold;
+        for (let id in game.goods) totalHold += game.goods[id].hold;
+        document.getElementById('storageUsed').innerText = totalHold;
+
+        const curHouse = houseList.find(h => h.id === game.house);
+        document.getElementById('house').innerText = curHouse.name;
+
+        // 更新每个商品
+        goodsConfig.forEach(goods => {
+            const item = game.goods[goods.id];
+            document.getElementById(`price_${goods.id}`).innerText = item.price;
+            document.getElementById(`hold_${goods.id}`).innerText = item.hold;
+
+            // 涨跌趋势
+            const trendEl = document.getElementById(`trend_${goods.id}`);
+            if (item.price > game.lastPrices[goods.id]) {
+                trendEl.innerText = '↑ 上涨';
+                trendEl.className = 'trend trend-up';
+            } else if (item.price < game.lastPrices[goods.id]) {
+                trendEl.innerText = '↓ 下跌';
+                trendEl.className = 'trend trend-down';
+            } else {
+                trendEl.innerText = '— 持平';
+                trendEl.className = 'trend trend-flat';
+            }
+
+            // 保质期
+            const expireEl = document.getElementById(`expire_${goods.id}`);
+            if (goods.expire >= 999) {
+                expireEl.innerText = '永久保质';
+            } else {
+                if (item.hold > 0) {
+                    expireEl.innerText = `保质期：还剩${item.expireLeft}轮`;
+                    if (item.expireLeft <= 1) {
+                        expireEl.className = 'expire-warning';
+                    } else {
+                        expireEl.className = '';
+                    }
+                } else {
+                    expireEl.innerText = `保质期：${goods.expire}轮`;
+                    expireEl.className = '';
+                }
+            }
+        });
+    }
+
+    // ===================== 大宗交易UI更新 =====================
+    function updateBulkUI() {
+        const buyBtn = document.getElementById('bulkBuyBtn');
+        const buyDesc = document.getElementById('bulkBuyDesc');
+        const sellBtn = document.getElementById('bulkSellBtn');
+        const sellDesc = document.getElementById('bulkSellDesc');
+
+        if (currentBulk.buy) {
+            buyDesc.innerText = currentBulk.buy.desc;
+            buyBtn.disabled = false;
+        } else {
+            buyDesc.innerText = '暂无采购机会，下轮再来看看吧';
+            buyBtn.disabled = true;
         }
-        if (totalHold >= gameData.maxStorage) {
-            alert('仓库已经满了！先卖点货再进货吧');
+
+        if (currentBulk.sell) {
+            sellDesc.innerText = currentBulk.sell.desc;
+            sellBtn.disabled = false;
+        } else {
+            sellDesc.innerText = '暂无出货机会，下轮再来看看吧';
+            sellBtn.disabled = true;
+        }
+    }
+
+    // 生成随机大宗机会
+    function generateBulkDeals() {
+        // 60%概率刷采购
+        currentBulk.buy = Math.random() < 0.6 
+            ? bulkBuyPool[Math.floor(Math.random() * bulkBuyPool.length)] 
+            : null;
+
+        // 60%概率刷出货
+        currentBulk.sell = Math.random() < 0.6 
+            ? bulkSellPool[Math.floor(Math.random() * bulkSellPool.length)] 
+            : null;
+
+        updateBulkUI();
+    }
+
+    // 执行大宗采购
+    function doBulkBuy() {
+        if (!currentBulk.buy || game.gameOver) return;
+        const deal = currentBulk.buy;
+        const cfg = goodsConfig.find(g => g.id === deal.id);
+        const goods = game.goods[deal.id];
+        const unitPrice = Math.floor(goods.price * deal.discount);
+        const totalCost = unitPrice * deal.num;
+
+        if (game.money < totalCost) {
+            showAlert('银两不足', `本次采购需要${totalCost}两，你钱不够！`);
             return;
         }
 
-        gameData.money -= goods.price;
-        goods.hold += 1;
+        let totalHold = 0;
+        for (let gid in game.goods) totalHold += game.goods[gid].hold;
+        if (totalHold + deal.num > game.maxStorage) {
+            showAlert('仓库已满', `仓库还能放${game.maxStorage - totalHold}件，放不下${deal.num}件！`);
+            return;
+        }
+
+        game.money -= totalCost;
+        goods.hold += deal.num;
+        goods.expireLeft = cfg.expire;
+        game.npcFavor[deal.id] += Math.floor(deal.num * 1.5);
+
+        // 管制物品检查
+        if (cfg.contraband) {
+            const seizeChance = goods.hold * 0.03;
+            if (Math.random() < seizeChance) {
+                const seizeNum = Math.min(goods.hold, Math.floor(Math.random() * 3) + 1);
+                goods.hold -= seizeNum;
+                setTimeout(() => {
+                    showAlert('⚠️ 朝廷巡查', 
+                        `查获你私藏${seizeNum}件${cfg.name}，当场没收！`
+                    );
+                }, 200);
+            }
+        }
+
+        showAlert('大宗采购成功', 
+            `购入 ${deal.num} 件 ${cfg.name}\n` +
+            `折扣价：${unitPrice} 两/件\n` +
+            `总计花费：${totalCost} 两\n` +
+            `当前持有：${goods.hold} 件`
+        );
+
+        // 用掉本次机会
+        currentBulk.buy = null;
+        updateBulkUI();
         refreshPage();
     }
 
-    // ========== 卖出商品 ==========
-    function sellGoods(id) {
-        const goods = gameData.goods[id];
+    // 执行大宗出货
+    function doBulkSell() {
+        if (!currentBulk.sell || game.gameOver) return;
+        const deal = currentBulk.sell;
+        const cfg = goodsConfig.find(g => g.id === deal.id);
+        const goods = game.goods[deal.id];
         
         if (goods.hold <= 0) {
-            alert('这件商品你没有库存，卖不了！');
+            showAlert('库存为空', '你没有这件货物可以出货！');
             return;
         }
 
-        gameData.money += goods.price;
-        goods.hold -= 1;
+        const num = goods.hold;
+        let actualIncome = 0;
+
+        if (deal.type === 'fee') {
+            const base = goods.price * num;
+            const fee = Math.floor(base * deal.value);
+            actualIncome = base - fee;
+        } else if (deal.type === 'discount') {
+            actualIncome = Math.floor(goods.price * num * deal.value);
+        } else if (deal.type === 'bonus') {
+            actualIncome = Math.floor(goods.price * num * (1 + deal.value));
+        }
+
+        game.money += actualIncome;
+        goods.hold = 0;
+
+        showAlert('大宗出货成功', 
+            `售出 ${num} 件 ${cfg.name}\n` +
+            `实际到账：${actualIncome} 两\n` +
+            `已使用本次限时机会`
+        );
+
+        currentBulk.sell = null;
+        updateBulkUI();
         refreshPage();
         checkWin();
     }
 
-    // ========== 随机事件系统（12种事件） ==========
-    function triggerEvent() {
-        const config = difficultyConfig[currentDiff];
-        const rand = Math.random();
-        let eventText = '';
-
-        // 根据难度决定负面事件权重
-        const isBadEvent = rand < config.badEventRate;
-
-        const events = {
-            good: [
-                {
-                    text: '🌾 风调雨顺大丰收！粮食、布匹价格下降30%',
-                    effect: () => {
-                        gameData.goods.food.price = Math.floor(gameData.goods.food.price * 0.7);
-                        gameData.goods.cloth.price = Math.floor(gameData.goods.cloth.price * 0.7);
-                    }
-                },
-                {
-                    text: '🛤️ 商路打通！海外香料大量涌入，价格暴跌40%',
-                    effect: () => {
-                        gameData.goods.spice.price = Math.floor(gameData.goods.spice.price * 0.6);
-                    }
-                },
-                {
-                    text: '🏘️ 民间建房热潮！木材价格翻倍上涨',
-                    effect: () => {
-                        gameData.goods.wood.price = Math.floor(gameData.goods.wood.price * 2);
-                    }
-                },
-                {
-                    text: '👑 皇宫采办年货！粮食、布匹价格大涨50%',
-                    effect: () => {
-                        gameData.goods.food.price = Math.floor(gameData.goods.food.price * 1.5);
-                        gameData.goods.cloth.price = Math.floor(gameData.goods.cloth.price * 1.5);
-                    }
-                },
-                {
-                    text: '🎊 节日庆典！全城消费高涨，所有商品涨价20%',
-                    effect: () => {
-                        for (let id in gameData.goods) {
-                            gameData.goods[id].price = Math.floor(gameData.goods[id].price * 1.2);
-                        }
-                    }
-                },
-                {
-                    text: '🚢 外贸商船靠岸！香料需求暴增，价格大涨70%',
-                    effect: () => {
-                        gameData.goods.spice.price = Math.floor(gameData.goods.spice.price * 1.7);
-                    }
-                }
-            ],
-            bad: [
-                {
-                    text: '☀️ 百日大旱！粮食绝收，价格暴涨80%',
-                    effect: () => {
-                        gameData.goods.food.price = Math.floor(gameData.goods.food.price * 1.8);
-                    }
-                },
-                {
-                    text: '🦗 蝗灾肆虐！粮食减产过半，价格上涨60%',
-                    effect: () => {
-                        gameData.goods.food.price = Math.floor(gameData.goods.food.price * 1.6);
-                    }
-                },
-                {
-                    text: '⚖️ 官府盐铁官营！食盐价格直接翻倍',
-                    effect: () => {
-                        gameData.goods.salt.price = Math.floor(gameData.goods.salt.price * 2);
-                    }
-                },
-                {
-                    text: '💰 朝廷加征商税！扣除你15%的现银',
-                    effect: () => {
-                        gameData.money = Math.floor(gameData.money * 0.85);
-                    }
-                },
-                {
-                    text: '🏴‍☠️ 遭遇山贼劫掠！仓库丢失三分之一货物',
-                    effect: () => {
-                        for (let id in gameData.goods) {
-                            gameData.goods[id].hold = Math.floor(gameData.goods[id].hold * 0.67);
-                        }
-                    }
-                },
-                {
-                    text: '😷 瘟疫蔓延！市面萧条，所有商品降价20%',
-                    effect: () => {
-                        for (let id in gameData.goods) {
-                            gameData.goods[id].price = Math.floor(gameData.goods[id].price * 0.8);
-                        }
-                    }
-                }
-            ]
-        };
-
-        // 随机选一个对应类型的事件
-        const pool = isBadEvent ? events.bad : events.good;
-        const event = pool[Math.floor(Math.random() * pool.length)];
-        
-        // 执行事件效果
-        event.effect();
-        eventText = event.text;
-
-        document.getElementById('eventTip').innerText = eventText;
+    // ===================== 好感度工具 =====================
+    function getFavorLevel(goodsId) {
+        const favor = game.npcFavor[goodsId];
+        let level = favorLevels[0];
+        for (let i = favorLevels.length - 1; i >= 0; i--) {
+            if (favor >= favorLevels[i].min) {
+                level = favorLevels[i];
+                break;
+            }
+        }
+        return level;
     }
 
-    // ========== 进入下一轮 ==========
+    function getAskPrice(goodsId) {
+        const cfg = goodsConfig.find(g => g.id === goodsId);
+        const level = getFavorLevel(goodsId);
+        return Math.floor(cfg.npc.baseCost * level.discount);
+    }
+
+    // ===================== 交易功能 =====================
+    function buyGoods(id, num) {
+        if (game.gameOver) return;
+        const goods = game.goods[id];
+        const cfg = goodsConfig.find(g => g.id === id);
+        const totalCost = goods.price * num;
+
+        if (game.money < totalCost) {
+            showAlert('买入失败', `购买${num}件${cfg.name}需要${totalCost}两，你银两不足！`);
+            return;
+        }
+
+        let totalHold = 0;
+        for (let gid in game.goods) totalHold += game.goods[gid].hold;
+        if (totalHold + num > game.maxStorage) {
+            showAlert('仓库已满', `仓库还能放${game.maxStorage - totalHold}件，放不下${num}件！`);
+            return;
+        }
+
+        game.money -= totalCost;
+        goods.hold += num;
+        goods.expireLeft = cfg.expire;
+        game.npcFavor[id] += num;
+
+        // 管制物品没收检查
+        if (cfg.contraband) {
+            const seizeChance = goods.hold * 0.03;
+            if (Math.random() < seizeChance) {
+                const seizeNum = Math.min(goods.hold, Math.floor(Math.random() * 3) + 1);
+                goods.hold -= seizeNum;
+                setTimeout(() => {
+                    showAlert('⚠️ 朝廷巡查', 
+                        `查获你私藏${seizeNum}件${cfg.name}，当场没收！\n持有越多，被查概率越高。`
+                    );
+                }, 200);
+            }
+        }
+
+        showAlert('买入成功', 
+            `购入 ${num} 件 ${cfg.name}\n` +
+            `花费：${totalCost} 两\n` +
+            `当前持有：${goods.hold} 件`
+        );
+
+        refreshPage();
+    }
+
+    function sellGoods(id, num) {
+        if (game.gameOver) return;
+        const goods = game.goods[id];
+        const cfg = goodsConfig.find(g => g.id === id);
+        
+        if (goods.hold < num) {
+            showAlert('库存不足', `你只有${goods.hold}件，卖不了${num}件！`);
+            return;
+        }
+
+        const baseIncome = goods.price * num;
+        let fee = 0;
+        if (!cfg.noFee && !game.freeTax) {
+            fee = Math.floor(baseIncome * cfg.feeRate);
+        }
+        const actualIncome = baseIncome - fee;
+
+        game.money += actualIncome;
+        goods.hold -= num;
+        game.npcFavor[id] += Math.floor(num / 2);
+
+        const feeText = fee > 0 ? `扣除手续费：${fee} 两` : `免手续费`;
+        showAlert('卖出成功', 
+            `售出 ${num} 件 ${cfg.name}\n` +
+            `原价：${baseIncome} 两\n` +
+            `${feeText}\n` +
+            `实际到账：${actualIncome} 两`
+        );
+
+        refreshPage();
+        checkWin();
+    }
+
+    // ===================== NPC情报系统 =====================
+    function askNPC(id) {
+        if (game.gameOver) return;
+        const cfg = goodsConfig.find(g => g.id === id);
+        const npc = cfg.npc;
+        const level = getFavorLevel(id);
+        const finalPrice = getAskPrice(id);
+        const favor = game.npcFavor[id];
+
+        const content = `
+            <div class="npc-card">
+                <div class="npc-avatar">${npc.avatar}</div>
+                <div class="npc-info">
+                    <h4>${npc.name}</h4>
+                    <div class="npc-trait">${npc.trait}</div>
+                    <div class="npc-desc">${npc.desc}</div>
+                </div>
+            </div>
+            <div class="favor-bar">
+                <p>当前交情：<span class="favor-level">${level.name}</span>（${favor}点）</p>
+                <p>打听费用：原价 ${npc.baseCost} 两 → 
+                    <span class="price-discount">${finalPrice} 两</span>
+                    （${Math.floor((1-level.discount)*100)}%优惠）
+                </p>
+                <p style="font-size:12px;color:#999;margin-top:5px;">
+                    交情越深，要价越低，偶尔还会免费相告
+                </p>
+            </div>
+        `;
+
+        showConfirm(`找${npc.name}打听`, content, 
+            '花钱打听', 
+            '算了',
+            () => doAskNPC(id, cfg),
+            () => {}
+        );
+    }
+
+    function doAskNPC(id, cfg) {
+        const npc = cfg.npc;
+        const level = getFavorLevel(id);
+        const finalPrice = getAskPrice(id);
+
+        // 免费概率随好感提升，不显示具体数值
+        const isFree = Math.random() < (level.discount < 1 ? 0.05 + (1 - level.discount) * 0.3 : 0);
+
+        if (!isFree) {
+            if (game.money < finalPrice) {
+                showAlert('银两不足', `打听消息需要${finalPrice}两银子，你钱不够！`);
+                return;
+            }
+            game.money -= finalPrice;
+        }
+
+        game.npcFavor[id] += 10;
+
+        // 生成消息
+        const willUp = Math.random() < 0.5;
+        const msg = willUp ? '上涨' : '下跌';
+
+        const tips = [
+            `「下一轮${cfg.name}，依我看多半会${msg}」`,
+            `「我得到风声，${cfg.name}价格怕是要${msg}」`,
+            `「听我一句劝，${cfg.name}接下来会${msg}」`,
+            `「这事儿我只告诉你，${cfg.name}眼看就要${msg}了」`
+        ];
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+
+        const freeText = isFree ? '\n\n（今日你面子够大，他免费说了！）' : '';
+        showAlert(`${npc.name}悄悄说`, 
+            `${isFree ? '' : '你花了' + finalPrice + '两银子。'}\n\n${npc.name}凑近你，低声道：\n${tip}\n\n（消息仅供参考，风险自担）${freeText}`
+        );
+
+        refreshPage();
+    }
+
+    // ===================== 新闻系统 =====================
+    function generateNews() {
+        const shuffled = [...newsPool].sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, 3);
+        
+        const newsList = document.getElementById('newsList');
+        newsList.innerHTML = '';
+        selected.forEach(news => {
+            const div = document.createElement('div');
+            div.className = 'news-item';
+            div.innerText = news.text;
+            newsList.appendChild(div);
+        });
+
+        selected.forEach(news => {
+            if (!game.goods[news.target]) return;
+            if (Math.random() < 0.7) {
+                if (news.isGood) {
+                    game.goods[news.target].price = Math.floor(game.goods[news.target].price * 1.2);
+                } else {
+                    game.goods[news.target].price = Math.floor(game.goods[news.target].price * 0.85);
+                }
+            } else {
+                if (news.isGood) {
+                    game.goods[news.target].price = Math.floor(game.goods[news.target].price * 0.9);
+                } else {
+                    game.goods[news.target].price = Math.floor(game.goods[news.target].price * 1.1);
+                }
+            }
+        });
+
+        goodsConfig.forEach(g => {
+            game.goods[g.id].price = Math.max(g.min, Math.min(g.max, game.goods[g.id].price));
+        });
+    }
+
+    // ===================== 官僚事件系统 =====================
+    function triggerOfficialEvent() {
+        const event = officialEvents[Math.floor(Math.random() * officialEvents.length)];
+        
+        const content = `
+            <p>${event.desc}</p>
+            <p style="margin-top:15px;">选项1：${event.options[0].text}</p>
+            <p>选项2：${event.options[1].text}</p>
+        `;
+
+        showConfirm(event.title, content, 
+            event.options[0].text, 
+            event.options[1].text,
+            () => handleOfficialChoice(event, 0),
+            () => handleOfficialChoice(event, 1)
+        );
+    }
+
+    function handleOfficialChoice(event, optIndex) {
+        const opt = event.options[optIndex];
+        if (game.money < opt.cost) {
+            showAlert('银两不足', '你拿不出这么多钱！');
+            return;
+        }
+        game.money -= opt.cost;
+
+        const success = Math.random() < opt.successRate;
+        if (success) {
+            if (optIndex === 0 && event.title.includes('税监')) {
+                game.freeTax = true;
+            }
+            if (optIndex === 0 && event.title.includes('寿宴')) {
+                game.goods.spice.hold += 3;
+            }
+            showAlert('结果不错', opt.successReward);
+        } else {
+            if (optIndex === 1 && event.title.includes('税监')) {
+                game.money -= 100;
+            }
+            if (optIndex === 1 && event.title.includes('寿宴')) {
+                for (let id in game.goods) {
+                    game.goods[id].hold = Math.floor(game.goods[id].hold * 0.8);
+                }
+            }
+            showAlert('事与愿违', opt.failReward);
+        }
+        refreshPage();
+    }
+
+    // ===================== 房产系统 =====================
+    function showHouseModal() {
+        let html = '';
+        houseList.forEach(house => {
+            const owned = game.house === house.id;
+            const canBuy = game.money >= house.price;
+            html += `
+                <div class="house-item ${owned ? 'owned' : ''} ${house.top ? 'top' : ''}">
+                    <div>
+                        <div style="font-weight:bold;">${house.name}</div>
+                        <div style="font-size:12px;color:#888;">${house.desc}</div>
+                    </div>
+                    <div>
+                        ${owned ? '<span style="color:#27ae60;">已拥有</span>' : 
+                          `<span style="color:#8b5a2b;">${house.price}两</span>
+                           <button class="modal-btn modal-btn-confirm" style="margin-left:10px;" 
+                            onclick="buyHouse('${house.id}')" ${!canBuy ? 'disabled style="opacity:0.5;"' : ''}>购买</button>`}
+                    </div>
+                </div>
+            `;
+        });
+        showModal('购置宅邸', html);
+    }
+
+    function buyHouse(id) {
+        const house = houseList.find(h => h.id === id);
+        if (game.money < house.price) {
+            showAlert('银两不足', '钱不够买这座宅邸！');
+            return;
+        }
+        game.money -= house.price;
+        game.house = id;
+        closeModal();
+        refreshPage();
+        checkWin();
+    }
+
+    // ===================== 仓库扩容 =====================
+    function upgradeStorage() {
+        if (game.gameOver) return;
+        const cost = 200;
+        if (game.money < cost) {
+            showAlert('银两不足', `扩建仓库需要${cost}两`);
+            return;
+        }
+        game.money -= cost;
+        game.maxStorage += 5;
+        showAlert('扩建成功', `仓库容量增加5件，当前上限${game.maxStorage}件`);
+        refreshPage();
+    }
+
+    // ===================== 广告功能 =====================
+    function watchAd() {
+        if (!game.adClicked) {
+            showAlert('广告提示', '岁愿是一个大帅哥');
+            game.money += 100;
+            game.adClicked = true;
+            refreshPage();
+        } else {
+            showAlert('提示', '看来你已认可我的颜值 请继续游戏吧');
+            document.getElementById('adBtn').style.display = 'none';
+        }
+    }
+
+    // ===================== 下一轮逻辑 =====================
     function nextRound() {
-        const config = difficultyConfig[currentDiff];
-        
-        // 保存上一轮价格
-        goodsList.forEach(goods => {
-            lastPrices[goods.id] = gameData.goods[goods.id].price;
+        if (game.gameOver) return;
+
+        if (game.round >= MAX_ROUND) {
+            endGame();
+            return;
+        }
+
+        goodsConfig.forEach(g => {
+            game.lastPrices[g.id] = game.goods[g.id].price;
         });
 
-        // 基础价格随机波动
-        goodsList.forEach(goods => {
-            const waveRange = goods.basePrice * 0.4 * config.priceWave;
-            const change = (Math.random() - 0.5) * 2 * waveRange;
-            let newPrice = Math.floor(goods.basePrice + change);
-            
-            // 限制在价格区间内
-            newPrice = Math.max(goods.min, Math.min(goods.max, newPrice));
-            gameData.goods[goods.id].price = newPrice;
+        // 保质期扣除
+        goodsConfig.forEach(g => {
+            if (g.expire < 999 && game.goods[g.id].hold > 0) {
+                game.goods[g.id].expireLeft--;
+                if (game.goods[g.id].expireLeft <= 0) {
+                    const lost = game.goods[g.id].hold;
+                    game.goods[g.id].hold = 0;
+                    game.goods[g.id].expireLeft = g.expire;
+                    setTimeout(() => {
+                        showAlert('货物变质', `你的${g.name}存放过久，全部变质报废了！\n损失了 ${lost} 件货物`);
+                    }, 200);
+                }
+            }
         });
 
-        // 触发随机事件
-        triggerEvent();
+        game.freeTax = false;
 
-        // 轮次+1
-        gameData.round += 1;
+        // 基础价格波动
+        goodsConfig.forEach(g => {
+            const wave = g.basePrice * 0.35;
+            const change = (Math.random() - 0.5) * 2 * wave;
+            let newPrice = Math.floor(g.basePrice + change);
+            newPrice = Math.max(g.min, Math.min(g.max, newPrice));
+            game.goods[g.id].price = newPrice;
+        });
+
+        generateNews();
+        generateBulkDeals(); // 刷新大宗机会
+        game.round++;
+
+        // 25%概率触发官僚事件
+        if (Math.random() < 0.25) {
+            setTimeout(() => triggerOfficialEvent(), 500);
+        }
+
+        // 管制物品每轮查抄
+        goodsConfig.forEach(g => {
+            if (g.contraband && game.goods[g.id].hold > 0) {
+                const seizeChance = game.goods[g.id].hold * 0.02;
+                if (Math.random() < seizeChance) {
+                    const seizeNum = Math.min(game.goods[g.id].hold, Math.floor(Math.random() * 2) + 1);
+                    game.goods[g.id].hold -= seizeNum;
+                    setTimeout(() => {
+                        showAlert('⚠️ 夜间查抄', 
+                            `官府连夜查抄违禁品，没收了你${seizeNum}件${g.name}！`
+                        );
+                    }, 800);
+                }
+            }
+        });
 
         refreshPage();
         checkWin();
+
+        if (game.round >= MAX_ROUND) {
+            setTimeout(() => endGame(), 1000);
+        }
     }
 
-    // ========== 通关检测 ==========
+    // ===================== 游戏结束结算 =====================
+    function endGame() {
+        game.gameOver = true;
+        let totalAsset = game.money;
+        const curHouse = houseList.find(h => h.id === game.house);
+        totalAsset += curHouse.price;
+        goodsConfig.forEach(g => {
+            totalAsset += game.goods[g.id].hold * game.goods[g.id].price;
+        });
+
+        let rank = '';
+        if (game.house === 'zhenguo') {
+            rank = '🎉 一代传奇 · 镇国富商';
+        } else if (totalAsset >= 80000) {
+            rank = '🥇 富甲天下 · 当世巨贾';
+        } else if (totalAsset >= 50000) {
+            rank = '🥈 腰缠万贯 · 地方首富';
+        } else if (totalAsset >= 20000) {
+            rank = '🥉 家境殷实 · 成功商人';
+        } else if (totalAsset >= 5000) {
+            rank = '📌 小有积蓄 · 寻常商户';
+        } else {
+            rank = '💔 百年蹉跎 · 勉强糊口';
+        }
+
+        showAlert('⏳ 百年已至 · 人生结算', 
+            `一百年时光匆匆而过，你的商途就此落幕。\n\n` +
+            `最终宅邸：${curHouse.name}\n` +
+            `现有银两：${game.money} 两\n` +
+            `总资产估值：${totalAsset} 两\n\n` +
+            `【评价】${rank}\n\n` +
+            `人生百年，求财一场，皆是云烟。`
+        );
+    }
+
+    // ===================== 通关检测 =====================
     function checkWin() {
-        if (gameData.money >= gameData.target) {
+        if (game.house === 'zhenguo') {
+            game.gameOver = true;
             setTimeout(() => {
-                alert(`🎉 恭喜通关！\n你用了 ${gameData.round} 轮时间，攒够了 ${gameData.target} 文钱\n成功买房置地，成为一方富商！`);
-            }, 100);
+                showAlert('🎉 恭喜通关', 
+                    `你用了${game.round}轮时间，从一介布衣做到镇国王府的主人。\n最终身家${game.money}两，裂土封王，名垂青史！\n\n百年之期未至，你已登临绝顶。`
+                );
+            }, 300);
         }
     }
 
-    // ========== 返回主菜单 ==========
-    function backToMenu() {
-        if (confirm('确定要返回主菜单吗？当前进度会丢失')) {
-            document.getElementById('gameScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'block';
-        }
+    // ===================== 弹窗工具 =====================
+    function showModal(title, content) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalContent').innerHTML = content;
+        document.getElementById('modalBtns').innerHTML = 
+            '<button class="modal-btn modal-btn-cancel" onclick="closeModal()">关闭</button>';
+        document.getElementById('modalMask').style.display = 'flex';
     }
+
+    function showAlert(title, text) {
+        showModal(title, `<p style="white-space:pre-line;">${text}</p>`);
+    }
+
+    function showConfirm(title, content, btn1Text, btn2Text, btn1Action, btn2Action) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalContent').innerHTML = content;
+        document.getElementById('modalBtns').innerHTML = `
+            <button class="modal-btn modal-btn-cancel" id="confirmBtn2">${btn2Text}</button>
+            <button class="modal-btn modal-btn-confirm" id="confirmBtn1">${btn1Text}</button>
+        `;
+        document.getElementById('modalMask').style.display = 'flex';
+
+        document.getElementById('confirmBtn1').onclick = function() {
+            closeModal();
+            btn1Action();
+        };
+        document.getElementById('confirmBtn2').onclick = function() {
+            closeModal();
+            btn2Action();
+        };
+    }
+
+    function closeModal() {
+        document.getElementById('modalMask').style.display = 'none';
+    }
+
+    // ===================== 游戏初始化 =====================
+    renderGoodsCards();
+    generateNews();
+    generateBulkDeals();
+    refreshPage();
 
 </script>
 </body>
