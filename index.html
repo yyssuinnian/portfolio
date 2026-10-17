@@ -176,10 +176,10 @@ function playPopSound(){
   osc.stop(audioCtx.currentTime + 0.1);
 }
 
-// ========== 掉落游戏：掉落球类 ==========
+// ========== 游戏1：掉落爆炸 球类（球体已放大） ==========
 class FallingBall {
   constructor(){
-    this.radius = Math.random()*15 + 25;
+    this.radius = Math.random()*20 + 30; // 30-50 放大尺寸
     this.x = Math.random()*(w - this.radius*2) + this.radius;
     this.y = -this.radius;
     this.speed = currentSpeed;
@@ -203,17 +203,17 @@ class FallingBall {
   }
 }
 
-// ========== 飞机游戏：飞球类 ==========
-class FlyingBall {
+// ========== 游戏2：飞机空战 敌方球（竖屏版，球体大幅放大） ==========
+class EnemyBall {
   constructor(){
-    this.radius = Math.random()*12 + 20;
-    this.x = w + this.radius;
-    this.y = Math.random()*(h - this.radius*2) + this.radius;
+    this.radius = Math.random()*20 + 35; // 35-55 大幅放大
+    this.x = Math.random()*(w - this.radius*2) + this.radius;
+    this.y = -this.radius;
     this.speed = currentSpeed;
     this.color = `hsl(${Math.random()*360}, 80%, 60%)`;
   }
   update(){
-    this.x -= this.speed;
+    this.y += this.speed;
   }
   draw(){
     ctx.fillStyle = this.color;
@@ -226,20 +226,20 @@ class FlyingBall {
     ctx.fill();
   }
   checkMiss(){
-    return this.x + this.radius < 0;
+    return this.y - this.radius > h;
   }
 }
 
-// ========== 飞机游戏：子弹类 ==========
+// ========== 飞机空战：子弹类 ==========
 class Bullet {
   constructor(x,y){
     this.x = x;
     this.y = y;
-    this.speed = 12;
-    this.radius = 4;
+    this.speed = 14;
+    this.radius = 5;
   }
   update(){
-    this.x += this.speed;
+    this.y -= this.speed; // 向上飞行
   }
   draw(){
     ctx.fillStyle = '#fff';
@@ -249,45 +249,47 @@ class Bullet {
   }
 }
 
-// ========== 飞机游戏：飞机类 ==========
+// ========== 飞机空战：玩家飞机（竖屏版） ==========
 class Plane {
   constructor(){
-    this.x = 80;
-    this.y = h / 2;
+    this.x = w / 2;
+    this.y = h - 80; // 固定在屏幕底部
     this.width = 60;
-    this.height = 40;
+    this.height = 70;
     this.fireTimer = 0;
-    this.fireRate = 150; // 发射间隔ms
+    this.fireRate = 140; // 发射间隔
   }
   update(deltaTime){
     // 自动发射子弹
     this.fireTimer += deltaTime;
     if(this.fireTimer >= this.fireRate){
       this.fireTimer = 0;
-      bullets.push(new Bullet(this.x + this.width/2, this.y));
+      bullets.push(new Bullet(this.x, this.y - this.height/2));
     }
   }
   draw(){
-    // 简易飞机造型
+    // 朝上的飞机机身
     ctx.fillStyle = '#4fc3f7';
     ctx.beginPath();
-    ctx.moveTo(this.x + this.width, this.y);
-    ctx.lineTo(this.x, this.y - this.height/2);
-    ctx.lineTo(this.x + 15, this.y);
-    ctx.lineTo(this.x, this.y + this.height/2);
+    ctx.moveTo(this.x, this.y - this.height/2);
+    ctx.lineTo(this.x - this.width/2, this.y + this.height/2);
+    ctx.lineTo(this.x, this.y + this.height/4);
+    ctx.lineTo(this.x + this.width/2, this.y + this.height/2);
     ctx.closePath();
     ctx.fill();
-    // 机尾火焰
+    
+    // 底部尾焰
     ctx.fillStyle = '#ff9800';
     ctx.beginPath();
-    ctx.moveTo(this.x, this.y - 8);
-    ctx.lineTo(this.x - 15 - Math.random()*10, this.y);
-    ctx.lineTo(this.x, this.y + 8);
+    ctx.moveTo(this.x - 12, this.y + this.height/2);
+    ctx.lineTo(this.x, this.y + this.height/2 + 18 + Math.random()*12);
+    ctx.lineTo(this.x + 12, this.y + this.height/2);
     ctx.closePath();
     ctx.fill();
   }
-  setY(y){
-    this.y = Math.max(30, Math.min(h-30, y));
+  // 左右移动控制
+  setX(x){
+    this.x = Math.max(this.width/2, Math.min(w - this.width/2, x));
   }
 }
 
@@ -320,7 +322,7 @@ function startGame(gameType, difficulty){
     if(gameType === 'fall'){
       entities.push(new FallingBall());
     }else if(gameType === 'plane'){
-      entities.push(new FlyingBall());
+      entities.push(new EnemyBall());
     }
   }, currentConfig.spawnInterval);
 
@@ -393,14 +395,14 @@ function animate(time){
       }
     }
 
-    // 更新子弹
+    // 更新子弹和飞机
     if(currentGame === 'plane'){
       plane.update(deltaTime);
       plane.draw();
       for(let i = bullets.length-1; i >= 0; i--){
         bullets[i].update();
         bullets[i].draw();
-        if(bullets[i].x > w) bullets.splice(i,1);
+        if(bullets[i].y < -10) bullets.splice(i,1);
       }
     }
   }
@@ -418,7 +420,7 @@ function animate(time){
 requestAnimationFrame(animate);
 
 // ========== 输入处理（鼠标+触摸统一优化） ==========
-const hitTolerance = 18; // 触控容差加大
+const hitTolerance = 18; // 触控容差
 
 function getCanvasPos(clientX, clientY){
   const rect = canvas.getBoundingClientRect();
@@ -428,7 +430,7 @@ function getCanvasPos(clientX, clientY){
   };
 }
 
-// 点击/触摸：掉落游戏点爆球；飞机游戏拖动飞机
+// 按下事件
 canvas.addEventListener('pointerdown', (e)=>{
   e.preventDefault();
   if(gameState !== 'playing') return;
@@ -449,17 +451,17 @@ canvas.addEventListener('pointerdown', (e)=>{
       }
     }
   }else if(currentGame === 'plane'){
-    // 飞机游戏：拖动飞机
-    plane.setY(pos.y);
+    // 飞机游戏：拖动飞机左右移动
+    plane.setX(pos.x);
   }
 });
 
-// 飞机游戏：拖动跟随
+// 拖动事件
 canvas.addEventListener('pointermove', (e)=>{
   e.preventDefault();
   if(gameState !== 'playing' || currentGame !== 'plane') return;
   const pos = getCanvasPos(e.clientX, e.clientY);
-  plane.setY(pos.y);
+  plane.setX(pos.x);
 });
 
 // ========== 按钮事件 ==========
@@ -503,6 +505,7 @@ document.getElementById('backBtn').addEventListener('click', ()=>{
 window.addEventListener('resize', ()=>{
   w = canvas.width = window.innerWidth;
   h = canvas.height = window.innerHeight;
+  if(plane) plane.y = h - 80;
 });
 </script>
 </body>
